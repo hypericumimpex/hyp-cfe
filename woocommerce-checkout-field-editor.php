@@ -3,11 +3,11 @@
  * Plugin Name: HYP WC Checkout Field Editor
  * Plugin URI: https://github.com/hypericumimpex/hyp-cfe/
  * Description: Add, remove and modifiy fields shown on your WooCommerce checkout page.
- * Version: 1.5.16
+ * Version: 1.5.19
  * Author: Hypericum
  * Author URI: https://github.com/hypericumimpex/
  * Tested up to: 5.0
- * WC tested up to: 3.5
+ * WC tested up to: 3.6.4
  * WC requires at least: 2.6
  *
  * Text Domain: woocommerce-checkout-field-editor
@@ -34,7 +34,7 @@ if ( ! function_exists( 'woothemes_queue_update' ) ) {
 woothemes_queue_update( plugin_basename( __FILE__ ), '2b8029f0d7cdd1118f4d843eb3ab43ff', '184594' );
 
 if ( is_woocommerce_active() ) {
-	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.16' );
+	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.19' );
 
 	/**
 	 * Updates the plugin version to DB.
@@ -470,7 +470,7 @@ if ( is_woocommerce_active() ) {
 			$field .= '<label for="' . esc_attr( $key ) . '" class="' . implode( ' ', $args['label_class'] ) . '">' . $args['label'] . $required . '</label>';
 		}
 
-		$field .= '<input type="text" class="checkout-date-picker input-text" name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" placeholder="' . $args['placeholder'] . '" ' . $args['maxlength'] . ' value="' . esc_attr( $value ) . '" />
+		$field .= '<input readonly type="text" class="checkout-date-picker input-text" name="' . esc_attr( $key ) . '" id="' . esc_attr( $key ) . '" placeholder="' . $args['placeholder'] . '" ' . $args['maxlength'] . ' value="' . esc_attr( $value ) . '" />
 			</p>' . $after;
 
 		return $field;
@@ -787,7 +787,10 @@ if ( is_woocommerce_active() ) {
 	 */
 	function wc_checkout_fields_dequeue_address_i18n(){
 		if ( apply_filters( 'wc_checkout_fields_dequeue_address_i18n', true ) ) {
-			wp_enqueue_script( 'wc-address-i18n-override', plugins_url( '/assets/js/wc-address-i18n-override.js', __FILE__ ), array( 'jquery' ), '1.0', true );
+			wp_deregister_script( 'wc-address-i18n' );
+			wp_dequeue_script( 'wc-address-i18n' );
+
+			wp_enqueue_script( 'wc-address-i18n-override', plugins_url( '/assets/js/wc-address-i18n-override.js', __FILE__ ), array( 'jquery' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
 		}
 	}
 	add_action( 'wp_enqueue_scripts', 'wc_checkout_fields_dequeue_address_i18n', 15 );

@@ -14,6 +14,8 @@ jQuery( document ).ready( function( $ ) {
 	$( '.checkout-date-picker' ).datepicker({
 		dateFormat: wc_checkout_fields.date_format,
 		numberOfMonths: 1,
+		ignoreReadonly: true,
+		allowInputToggle: true,
 		showButtonPanel: true,
 		changeMonth: true,
 		changeYear: true,

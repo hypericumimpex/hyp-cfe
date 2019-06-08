@@ -66,5 +66,5 @@
   text-decoration: line-through;
 }
 #wc_checkout_fields tr.disabled td:first-child {
-  opacity:1;
+  opacity: 1;
 }

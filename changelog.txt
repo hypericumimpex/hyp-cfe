@@ -1,5 +1,14 @@
 *** Checkout Field Editor Changelog ***
 
+2019-06-05 - version 1.5.19
+* Fix - Fields not honoring position ordering.
+
+2019-04-16 - version 1.5.18
+* Tweak - WC tested up to 3.6
+
+2019-02-25 - version 1.5.17
+* Fix - Datepicker causing mobile keyboards to be launched
+
 2019-01-07 - version 1.5.16
 * Fix - Added fields duplicated on order details screen
 * Fix - Displays `yes` instead of `1` for checkbox fields on order details screen and emails
