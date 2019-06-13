@@ -3,7 +3,7 @@
  * Plugin Name: HYP WC Checkout Field Editor
  * Plugin URI: https://github.com/hypericumimpex/hyp-cfe/
  * Description: Add, remove and modifiy fields shown on your WooCommerce checkout page.
- * Version: 1.5.19
+ * Version: 1.5.21
  * Author: Hypericum
  * Author URI: https://github.com/hypericumimpex/
  * Tested up to: 5.0
@@ -34,7 +34,7 @@ if ( ! function_exists( 'woothemes_queue_update' ) ) {
 woothemes_queue_update( plugin_basename( __FILE__ ), '2b8029f0d7cdd1118f4d843eb3ab43ff', '184594' );
 
 if ( is_woocommerce_active() ) {
-	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.19' );
+	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.21' );
 
 	/**
 	 * Updates the plugin version to DB.
@@ -785,12 +785,16 @@ if ( is_woocommerce_active() ) {
 	 * the order remains how it is set in the field editor
 	 * settings.
 	 */
-	function wc_checkout_fields_dequeue_address_i18n(){
-		if ( apply_filters( 'wc_checkout_fields_dequeue_address_i18n', true ) ) {
-			wp_deregister_script( 'wc-address-i18n' );
-			wp_dequeue_script( 'wc-address-i18n' );
+	function wc_checkout_fields_dequeue_address_i18n() {
+		if ( ! is_checkout() ) {
+			return;
+		}
 
-			wp_enqueue_script( 'wc-address-i18n-override', plugins_url( '/assets/js/wc-address-i18n-override.js', __FILE__ ), array( 'jquery' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
+		if ( apply_filters( 'wc_checkout_fields_dequeue_address_i18n', true ) ) {
+			wp_dequeue_script( 'wc-address-i18n' );
+			wp_deregister_script( 'wc-address-i18n' );
+
+			wp_register_script( 'wc-address-i18n', plugins_url( '/assets/js/wc-address-i18n-override.js', __FILE__ ), array( 'jquery', 'wc-country-select' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
 		}
 	}
 	add_action( 'wp_enqueue_scripts', 'wc_checkout_fields_dequeue_address_i18n', 15 );

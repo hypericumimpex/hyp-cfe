@@ -1,6 +1,5 @@
 /*global wc_address_i18n_params */
 jQuery( function( $ ) {
-
     // wc_address_i18n_params is required to continue, ensure the object exists
     if ( typeof wc_address_i18n_params === 'undefined' ) {
         return false;
@@ -22,9 +21,7 @@ jQuery( function( $ ) {
     }
 
     $( document.body )
-
-        // Handle locale
-        .bind( 'country_to_state_changing', function( event, country, wrapper ) {
+        .on( 'country_to_state_changing', function( event, country, wrapper ) {
 
             var thisform = wrapper, thislocale;
 
@@ -106,24 +103,8 @@ jQuery( function( $ ) {
                     last_priority = $( this ).data( 'priority' );
                 } );
 
-                // Sort the fields.
-                rows.sort( function( a, b ) {
-
-                    var asort = parseInt( $( a ).data( 'priority' ) || $( a ).data( 'sort' ), 10 ),
-                        bsort = parseInt( $( b ).data( 'priority' ) || $( b ).data( 'sort' ), 10 );
-
-                    if ( isNaN( asort ) ) {
-                        asort = 0;
-                    }
-
-                    if ( isNaN( bsort ) ) {
-                        bsort = 0;
-                    }
-
-                    return asort > bsort ? 1 : -1;
-                });
-
                 rows.detach().appendTo( wrapper );
             } );
-        });
+        })
+		.trigger( 'wc_address_i18n_ready' );
 });

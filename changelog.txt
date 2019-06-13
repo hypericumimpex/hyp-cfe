@@ -1,5 +1,11 @@
 *** Checkout Field Editor Changelog ***
 
+2019-06-10 - version 1.5.21
+* Fix - Fields not honoring position ordering part 2.
+
+2019-06-06 - version 1.5.20
+* Fix - Revert previous change (Fields not honoring position ordering).
+
 2019-06-05 - version 1.5.19
 * Fix - Fields not honoring position ordering.
 

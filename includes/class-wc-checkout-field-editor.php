@@ -86,7 +86,7 @@ class WC_Checkout_Field_Editor {
 		?>
 		<div id="message" class="woocommerce-message wc-connect updated">
 			<div class="squeezer">
-				<h4><?php esc_html_e( '<strong>Checkout field editor is ready</strong> &#8211; Customise your forms below :)', 'woocommerce-checkout-field-editor' ); ?></h4>
+				<h4><?php esc_html_e( 'Checkout field editor is ready &#8211; Customize your forms below', 'woocommerce-checkout-field-editor' ); ?></h4>
 				<p class="submit"><a class="button-primary" href="https://docs.woocommerce.com/document/checkout-field-editor/"><?php esc_html_e( 'Documentation', 'woocommerce-checkout-field-editor' ); ?></a> <a class="skip button-primary" href="<?php echo esc_url( add_query_arg( 'dismiss_welcome', true ) ); ?>"><?php esc_html_e( 'Dismiss', 'woocommerce-checkout-field-editor' ); ?></a></p>
 			</div>
 		</div>
