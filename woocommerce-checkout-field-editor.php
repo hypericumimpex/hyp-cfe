@@ -3,11 +3,11 @@
  * Plugin Name: HYP WC Checkout Field Editor
  * Plugin URI: https://github.com/hypericumimpex/hyp-cfe/
  * Description: Add, remove and modifiy fields shown on your WooCommerce checkout page.
- * Version: 1.5.21
+ * Version: 1.5.24
  * Author: Hypericum
  * Author URI: https://github.com/hypericumimpex/
- * Tested up to: 5.0
- * WC tested up to: 3.6.4
+ * Tested up to: 5.2
+ * WC tested up to: 3.7
  * WC requires at least: 2.6
  *
  * Text Domain: woocommerce-checkout-field-editor
@@ -34,7 +34,8 @@ if ( ! function_exists( 'woothemes_queue_update' ) ) {
 woothemes_queue_update( plugin_basename( __FILE__ ), '2b8029f0d7cdd1118f4d843eb3ab43ff', '184594' );
 
 if ( is_woocommerce_active() ) {
-	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.21' );
+	define( 'WC_CHECKOUT_FIELD_EDITOR_VERSION', '1.5.24' );
+	define( 'WC_CHECKOUT_FIELD_EDITOR_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 
 	/**
 	 * Updates the plugin version to DB.
@@ -166,10 +167,14 @@ if ( is_woocommerce_active() ) {
 		if ( ! class_exists( 'WC_Checkout_Field_Editor_PIP_Integration' ) ) {
 			require_once( 'includes/class-wc-checkout-field-editor-pip-integration.php' );
 		}
-        
+
         if ( ! class_exists( 'WC_Checkout_Field_Editor_Privacy' ) ) {
 			require_once( 'includes/class-wc-checkout-field-editor-privacy.php' );
 		}
+
+		require_once( 'includes/class-wc-checkout-field-editor-order-details.php' );
+		$order_details = new WC_Checkout_Field_Editor_Order_Details();
+        $order_details->register_hooks();
 
 
 		/**
@@ -195,39 +200,6 @@ if ( is_woocommerce_active() ) {
 		}
 	}
 	add_action( 'init', 'woocommmerce_init_cfe_export_handler', 99 );
-
-	/**
-	 * Display custom fields in emails
-	 *
-	 * @param array $fields Current custom fields
-	 * @param bool $sent_to_admin Is order being sent to an admin
-	 * @param object $order Order object
-	 * @return array
-	 */
-	function wc_checkout_fields_add_custom_fields_to_emails( $fields = array(), $sent_to_admin = false, $order  ) {
-		$custom_keys   = array();
-		$custom_fields = array_merge(
-			WC_Checkout_Field_Editor::get_fields( 'billing' ),
-			WC_Checkout_Field_Editor::get_fields( 'shipping' ),
-			WC_Checkout_Field_Editor::get_fields( 'additional' )
-		);
-
-		// Loop through all custom fields to see if it should be added
-		foreach ( $custom_fields as $name => $options ) {
-			if ( isset( $options['display_options'] ) ) {
-				if ( in_array( 'emails', $options['display_options'] ) ) {
-					$custom_keys[ esc_attr( $name ) ] = array(
-						'label' => esc_attr( $options[ 'label' ] ),
-						'value' => esc_attr( wc_get_checkout_field_value( $order, $name, $options ) )
-					);
-				}
-			}
-		}
-
-		return $custom_keys;
-	}
-
-	add_filter( 'woocommerce_email_order_meta_fields', 'wc_checkout_fields_add_custom_fields_to_emails', 10, 3 );
 
 	/**
 	 * wc_checkout_fields_modify_billing_fields function.
@@ -383,7 +355,7 @@ if ( is_woocommerce_active() ) {
 		global $wp_scripts;
 
 		if ( is_checkout() ) {
-			wp_enqueue_script( 'wc-checkout-editor-frontend', plugins_url( 'assets/js/checkout.js' , __FILE__ ), array( 'jquery', 'jquery-ui-datepicker' ), WC()->version, true );
+			wp_enqueue_script( 'wc-checkout-editor-frontend', plugins_url( '/dist/js/frontend.js' , __FILE__ ), array( 'jquery', 'jquery-ui-datepicker' ), WC()->version, true );
 
 			$jquery_version = isset( $wp_scripts->registered['jquery-ui-core']->ver ) ? $wp_scripts->registered['jquery-ui-core']->ver : '1.9.2';
 
@@ -692,48 +664,6 @@ if ( is_woocommerce_active() ) {
 	}
 
 	/**
-	 * Display custom checkout fields on view order pages.
-	 *
-	 * @param object $order
-	 */
-	function wc_display_custom_fields_view_order( $order ) {
-		$fields   = wc_get_custom_checkout_fields( $order );
-		$found    = false;
-		$html     = '';
-
-		// Loop through all custom fields to see if it should be added
-		foreach ( $fields as $name => $options ) {
-			$option_value = wc_get_checkout_field_value( $order, $name, $options );
-			if ( isset( $options['display_options'] ) && in_array( 'view_order', $options['display_options'] ) &&  '' !== $option_value ) {
-				$found = true;
-				$html .= '<dt>' . esc_attr( $options['label'] ) . ':</dt>';
-				$html .= '<dd>' . $option_value . '</dd>';
-			}
-		}
-
-		if ( $found ) {
-			echo '<dl>';
-			echo $html;
-			echo '</dl>';
-		}
-	}
-
-	/**
-	 * Add fields to view order/thanks pages.
-	 *
-	 * @param object $order
-	 */
-	function wc_display_custom_fields( $order ) {
-		if ( version_compare( WC_VERSION, '3.2', '<' ) ) {
-			add_action( 'woocommerce_order_details_after_customer_details', 'wc_display_custom_fields_view_order', 20, 1 );
-		} else {
-			add_action( 'woocommerce_order_details_after_order_table', 'wc_display_custom_fields_view_order', 20, 1 );
-		}
-	}
-
-	add_action( 'woocommerce_loaded', 'wc_display_custom_fields', 20, 1 );
-
-	/**
 	 * Get custom checkout fields data for admin order area
 	 *
 	 * @param object $order
@@ -794,7 +724,7 @@ if ( is_woocommerce_active() ) {
 			wp_dequeue_script( 'wc-address-i18n' );
 			wp_deregister_script( 'wc-address-i18n' );
 
-			wp_register_script( 'wc-address-i18n', plugins_url( '/assets/js/wc-address-i18n-override.js', __FILE__ ), array( 'jquery', 'wc-country-select' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
+			wp_register_script( 'wc-address-i18n', plugins_url( '/dist/js/frontend.js', __FILE__ ), array( 'jquery', 'wc-country-select' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
 		}
 	}
 	add_action( 'wp_enqueue_scripts', 'wc_checkout_fields_dequeue_address_i18n', 15 );
@@ -802,10 +732,10 @@ if ( is_woocommerce_active() ) {
 	/**
 	 * Returns the value of an order's checkout field
 	 *
-	 * @param object $orderd Field's order
-	 * @param string $name Field's name
-	 * @param array $options Field's properties
-	 * @return array
+	 * @param WC_Order $order Field's order.
+	 * @param string   $name Field's name.
+	 * @param array    $options Field's properties.
+	 * @return string
 	 */
 	function wc_get_checkout_field_value( $order, $name, $options ) {
 		$order_id    = version_compare( WC_VERSION, '3.0', '<' ) ? $order->id : $order->get_id();
@@ -819,3 +749,4 @@ if ( is_woocommerce_active() ) {
 	}
 
 } // end is_woocommerce_active() conditional check
+

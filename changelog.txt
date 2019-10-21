@@ -1,5 +1,16 @@
 *** Checkout Field Editor Changelog ***
 
+2019-10-15 - version 1.5.24
+
+* Tweak - Group checkout fields in appropriate places on order details page
+and emails.
+
+2019-08-09 - version 1.5.23
+* Fix - Missing dist folder causing JS errors and unable to add fields.
+
+2019-08-08 - version 1.5.22
+* Tweak - WC tested up to 3.7
+
 2019-06-10 - version 1.5.21
 * Fix - Fields not honoring position ordering part 2.
 

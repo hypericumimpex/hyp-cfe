@@ -68,8 +68,8 @@ class WC_Checkout_Field_Editor {
 	 * @return void
 	 */
 	public function scripts() {
-		wp_enqueue_script( 'wc-checkout-fields', plugins_url( '/assets/js/checkout-fields.js', dirname( __FILE__ ) ), array( 'jquery', 'jquery-ui-sortable', 'jquery-tiptip', 'woocommerce_admin' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
-		wp_enqueue_style( 'wc-checkout-fields', plugins_url( '/assets/css/checkout-fields.css', dirname( __FILE__ ) ), array(), WC_CHECKOUT_FIELD_EDITOR_VERSION );
+		wp_enqueue_script( 'wc-checkout-fields', plugins_url( '/dist/js/admin.js', dirname( __FILE__ ) ), array( 'jquery', 'jquery-ui-sortable', 'jquery-tiptip', 'woocommerce_admin' ), WC_CHECKOUT_FIELD_EDITOR_VERSION, true );
+		wp_enqueue_style( 'wc-checkout-fields', plugins_url( '/dist/css/admin.css', dirname( __FILE__ ) ), array(), WC_CHECKOUT_FIELD_EDITOR_VERSION );
 
 		if ( '' == get_option( 'hide_checkout_field_editors_welcome_notice' ) ) {
 			wp_enqueue_style( 'woocommerce-activation', WC()->plugin_url() . '/assets/css/activation.css', array(), WC_CHECKOUT_FIELD_EDITOR_VERSION );
